@@ -12,6 +12,8 @@ namespace Scripter.Settings
         public bool ePort { get; set; } //enable port
         public int Port { get; set; } //port
         public bool eInterval { get; set; } //true
-        public int Interval { get; set; } //ms
+        public int Interval { get; set; } //ms Connect
+
+        public int CheckInterval { get; set; }//ms Connect Checked for Mixer
     }
 }
