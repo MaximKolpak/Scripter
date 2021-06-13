@@ -47,9 +47,28 @@ namespace Scripter.MainClass
 
         private void _console_OnAuxSendLevel(object sender, OSCPacket packet)
         {
-            
-        }
+            int indexAux = Int16.Parse(packet.Nodes[2]);
+            int indexBus = Int16.Parse(packet.Nodes[4]);
+            float value = packet.Arguments[0].ToFloat();
+            foreach (Script script in _luas)
+            {
+                LuaFunction func = script._lua["F_AuxSendLevel"] as LuaFunction;
 
+                if (func == null)
+                    continue;
+
+                new Thread(() =>
+                {
+                    while (!script.FreeProcess)
+                    {
+                        Thread.Sleep(500);
+                    }
+                    script.FreeProcess = false;
+                    func.Call(indexAux, indexBus, value);
+                    script.FreeProcess = true;
+                }).Start();
+            }
+        }
         private void _console_OnAuxFade(object sender, OSCPacket packet)
         {
             int indexAux = Int16.Parse(packet.Nodes[2]);

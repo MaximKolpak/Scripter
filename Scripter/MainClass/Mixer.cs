@@ -25,7 +25,7 @@ namespace Scripter.MainClass
             if (interval != 0)
                 _console.Interval = interval;
 
-            _methods = new MethodCall(_console, _scripts);
+
 
         }
 
@@ -41,6 +41,10 @@ namespace Scripter.MainClass
             l.RegisterFunction("BusChangeName", this, typeof(Mixer).GetMethod("ChangeNameBus"));
             l.RegisterFunction("BusSelectMute", this, typeof(Mixer).GetMethod("BusSelectMut"));
             l.RegisterFunction("RequestAuxFader", this, typeof(Mixer).GetMethod("RequestAuxFader"));
+            l.RegisterFunction("RequestAuxMixBussFader", this, typeof(Mixer).GetMethod("RequestAuxMixBussFader"));
+            l.RegisterFunction("SendAuxFaderValue", this, typeof(Mixer).GetMethod("SendAuxFaderValue"));
+            l.RegisterFunction("SendAuxMixBusFader", this, typeof(Mixer).GetMethod("SendAuxMixBusFader"));
+            l.RegisterFunction("AuxMute", this, typeof(Mixer).GetMethod("AuxMute"));
 
         }
 
@@ -55,7 +59,7 @@ namespace Scripter.MainClass
                     _scripts.Add(luaScript);
                 }
             }
-            _methods.scripts(_scripts);
+            _methods = new MethodCall(_console, _scripts);
             CallMainFunction();
         }
 
@@ -100,11 +104,56 @@ namespace Scripter.MainClass
 
         }
 
+        public void SendAuxFaderValue(double indexAux, float value)
+        {
+            new Thread(() =>
+            {
+                int iAux = (int)indexAux;
+                _console.Aux[iAux].Strip.Fader.Value = value;
+                _console.SendParameter(_console.Aux[iAux].Strip.Fader);
+            }).Start();
+        }
+
+        public void SendAuxMixBusFader(double indexAux, double indexBus, float value)
+        {
+            new Thread(() =>
+            {
+                int iAux = (int)indexAux;
+                int iBus = (int)indexBus;
+                _console.Aux[iAux].Strip.MixBuss[iBus].Fader.Value = value;
+                _console.SendParameter(_console.Aux[iAux].Strip.MixBuss[iBus].Fader);
+            }).Start();
+        }
+
+        public void AuxMute(double indexAux, double value)
+        {
+            new Thread(() =>
+            {
+                int iAux = (int)indexAux;
+                if (value == 1)
+                    _console.Aux[iAux].Strip.Mute.Value = X32OnOff.On;
+                if (value == 0)
+                    _console.Aux[iAux].Strip.Mute.Value = X32OnOff.Off;
+                _console.SendParameter(_console.Aux[iAux].Strip.Mute);
+            }).Start();
+        }
+
+
         #region Request value
         public void RequestAuxFader(double indexAux)
         {
             int iAux = (int)indexAux;
             _console.ControlRequest(_console.Aux[iAux].Strip.Fader);
+        }
+
+        public void RequestAuxMixBussFader(double indexAux, double indexBus)
+        {
+            new Thread(() =>
+            {
+                int iAux = (int)indexAux;
+                int iBus = (int)indexBus;
+                _console.ControlRequest(_console.Aux[iAux].Strip.MixBuss[iBus].Fader);
+            }).Start();
         }
         #endregion
 
