@@ -1,20 +1,8 @@
 ﻿using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Scripter.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Scripter.DialogWindow
 {
@@ -86,8 +74,37 @@ namespace Scripter.DialogWindow
             }
             else
             {
-                
+                this.ShowMessageAsync("Ошибка", "Не удалось распознать текст как IpAdress");
+                return;
             }
+
+            if (UIEPort.IsChecked == true)
+            {
+                _settings.ePort = true;
+                _settings.Port = int.Parse(UIPort.Text);
+            }
+            else
+            {
+                _settings.ePort = false;
+                _settings.Port = 10023;
+            }
+
+            if (UIEInterval.IsChecked == true)
+            {
+                _settings.eInterval = true;
+                _settings.Interval = int.Parse(UIInterval.Text);
+            }
+            else
+            {
+                _settings.eInterval = false;
+                _settings.Interval = 0;
+            }
+
+            _settings.CheckInterval = int.Parse(IntrConnCheck.Text);
+            _settings.ThreadSleepConnection = int.Parse(IntrThreadSleep.Text);
+
+            AlreadySave = true;
+            this.Close();
         }
     }
 }

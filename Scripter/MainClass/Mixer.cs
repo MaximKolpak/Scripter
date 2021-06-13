@@ -1,12 +1,113 @@
-﻿using System;
+﻿using Behringer.X32;
+using NLua;
+using Scripter.Function;
+using Scripter.Settings;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
+using System.Threading;
 
 namespace Scripter.MainClass
 {
-    class Mixer
+    internal class Mixer
     {
+        private X32Console _console;
+
+        private List<Script> _scripts;
+        private MethodCall _methods;
+
+        public Mixer(string IpMixer, int port = 0, int interval = 0)
+        {
+            _console = new X32Console();
+            _console.IPAddress = IPAddress.Parse(IpMixer);
+
+            if (port != 0)
+                _console.Port = port;
+            if (interval != 0)
+                _console.Interval = interval;
+
+            _methods = new MethodCall(_console, _scripts);
+
+        }
+
+        public void Connect()
+        {
+            _console.Connect();
+        }
+
+        private void _InithFunction(Lua l)
+        {
+            l["Debug"] = new LuaDebug();
+            l["Thread"] = new LuaThreads();
+            l.RegisterFunction("BusChangeName", this, typeof(Mixer).GetMethod("ChangeNameBus"));
+            l.RegisterFunction("BusSelectMute", this, typeof(Mixer).GetMethod("BusSelectMut"));
+            l.RegisterFunction("RequestAuxFader", this, typeof(Mixer).GetMethod("RequestAuxFader"));
+
+        }
+
+        public void RunScripts(List<ScriptLua> scripts)
+        {
+            _scripts = new List<Script>();
+            foreach (ScriptLua script in scripts)
+            {
+                if (script.Enable && script.State != StateScript.Container)
+                {
+                    Script luaScript = new Script(_InithFunction, script.Path);
+                    _scripts.Add(luaScript);
+                }
+            }
+            _methods.scripts(_scripts);
+            CallMainFunction();
+        }
+
+        private void CallMainFunction()
+        {
+            foreach (Script script in _scripts)
+            {
+                script.MainFunction();
+            }
+        }
+
+        public void DestroyFunction()
+        {
+            if (_methods != null)
+                _methods.Destroy();
+        }
+
+
+        #region Fuction Lua > c#
+        public void ChangeNameBus(double index, string name)
+        {
+            new Thread(() =>
+            {
+                int iBus = (int)index;
+                _console.Bus[iBus].Strip.Config.Name.Value = name;
+                _console.SendParameter(_console.Bus[iBus].Strip.Config.Name);
+            }).Start();
+
+        }
+
+        public void BusSelectMut(double index, double value)
+        {
+            new Thread(() =>
+            {
+                int iBus = (int)index;
+                if (value == 1)
+                    _console.Bus[iBus].Strip.Mute.Value = X32OnOff.On;
+                if (value == 0)
+                    _console.Bus[iBus].Strip.Mute.Value = X32OnOff.Off;
+                _console.SendParameter(_console.Bus[iBus].Strip.Mute);
+            }).Start();
+
+        }
+
+        #region Request value
+        public void RequestAuxFader(double indexAux)
+        {
+            int iAux = (int)indexAux;
+            _console.ControlRequest(_console.Aux[iAux].Strip.Fader);
+        }
+        #endregion
+
+        #endregion
     }
 }

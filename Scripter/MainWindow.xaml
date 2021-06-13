@@ -1,12 +1,107 @@
-﻿<Window x:Class="Scripter.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Scripter"
+﻿<mah:MetroWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
+    x:Class="Scripter.MainWindow"
+        ResizeMode="CanMinimize"
         mc:Ignorable="d" Closed="Window_Closed"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Manager Behringer x32"
+        Height="450"
+        Width="800" StateChanged="MetroWindow_StateChanged">
     <Grid>
-        <TextBlock x:Name="Conn" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Menu Grid.Column="0">
+                <MenuItem Header="Файл">
+                    <MenuItem Header="Папки">
+                        <MenuItem x:Name="FolderScripts" Header="Скрипты" Click="FolderScripts_Click" />
+                        <MenuItem x:Name="FolderSettings" Header="Настройки" Click="FolderSettings_Click" />
+                    </MenuItem>
+                    <MenuItem x:Name="ToTray" Header="Свернуть" Click="ToTray_Click" />
+                    <MenuItem x:Name="Exit" Header="Выход" Click="Exit_Click" />
+                </MenuItem>
+                <MenuItem Header="Настройки">
+                    <MenuItem x:Name="BehrSett" Header="Настройки подключения" />
+                    <CheckBox Content="Автоззапуск" x:Name="CheckBoxAutoRun" FontSize="14" />
+                </MenuItem>
+                <MenuItem Header="Управление">
+                    <MenuItem x:Name="ReloadScript" Header="Перезапустить скрипты" Click="ReloadScript_Click" />
+                    <MenuItem Header="Переподключится к микшеру" x:Name="ReconnectMixer" />
+                    <CheckBox Content="Включить Консоль" x:Name="ConsoleCheckBox" Checked="ConsoleCheckBox_Checked" Unchecked="ConsoleCheckBox_Unchecked" FontSize="14" />
+
+                </MenuItem>
+            </Menu>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="1">
+                <CheckBox x:Name="UIConnectMixer" IsChecked="False" IsEnabled="False" Content="Подключение к микшеру" Margin="0 0 12 0" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="5 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40" />
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="368" />
+                    <ColumnDefinition Width="80" />
+                </Grid.ColumnDefinitions>
+                <Border BorderThickness="1" BorderBrush="Gray" Grid.Column="0">
+                    <TextBlock Text="ID"  Margin="10 0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Border>
+                <Border BorderThickness="0 1 1 1" BorderBrush="Gray" Grid.Column="1">
+                <TextBlock Text="Name"  Margin="10 0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                </Border>
+                <Border BorderThickness="0 1 1 1" BorderBrush="Gray" Grid.Column="2">
+                <TextBlock Text="Date"  Margin="10 0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                    </Border>
+                <Border BorderThickness="0 1 1 1" BorderBrush="Gray" Grid.Column="3">
+                <TextBlock Text="Path"  Margin="10 0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                    </Border>
+                <Border BorderThickness="0 1 1 1" BorderBrush="Gray" Grid.Column="4">
+                <TextBlock Text="IsEnable"  Margin="10 0" HorizontalAlignment="Left" x:Name="EnableScript" />
+                    </Border>
+            </Grid>
+
+            <ListBox Grid.Row="1" Grid.ColumnSpan="4" x:Name="UiScripts">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="360" />
+                                <ColumnDefinition Width="80" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding ID}" Grid.Column="0" Margin="0 0 10 0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            <TextBlock Text="{Binding Name}" Grid.Column="1"  Margin="5 0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                            <TextBlock Text="{Binding Date}" Grid.Column="2" Margin="5 0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                            <TextBlock Text="{Binding Path}" Grid.Column="3" Margin="5 0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                            <CheckBox IsChecked="{Binding Enable}" Grid.Column="4" Margin="29 0" HorizontalAlignment="Left" x:Name="EnableScript" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+        <tb:TaskbarIcon x:Name="TascbrIcon"
+      IconSource="/Resources/icon.ico"
+      ToolTipText="Manager" TrayMouseDoubleClick="TaskbarIcon_TrayMouseDoubleClick" />
     </Grid>
-</Window>
+</mah:MetroWindow>
