@@ -14,18 +14,38 @@ namespace Scripter.MainClass
         public Thread MainThread { get; set; } //Основной поток
         public string PathFile; //Путь к файлу
         public bool FreeProcess; //Незажействован ли процессор
+        public bool Abort;//Остановка процессора
 
         public Script(Action<Lua> RegFunction, string PathFile)
         {
             _lua = new Lua();
+            _lua.SetDebugHook(KeraLua.LuaHookMask.Line, 0);
+            _lua.DebugHook += _lua_DebugHook;
             this.PathFile = PathFile;
             RegFunction(_lua);
-            DeclaredScripts();
+
+            new Thread(DeclaredScripts).Start();
+        }
+
+        private void _lua_DebugHook(object sender, NLua.Event.DebugHookEventArgs e)
+        {
+            if (Abort)
+            {
+                Lua l = (Lua)sender;
+                l.State.Error("StoppedScript");
+            }
         }
 
         private void DeclaredScripts()
         {
-            _lua.DoFile(PathFile);
+            try
+            {
+                _lua.DoFile(PathFile);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public void MainFunction()

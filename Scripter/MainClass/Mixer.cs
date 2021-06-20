@@ -24,9 +24,6 @@ namespace Scripter.MainClass
                 _console.Port = port;
             if (interval != 0)
                 _console.Interval = interval;
-
-
-
         }
 
         public void Connect()
@@ -75,6 +72,11 @@ namespace Scripter.MainClass
         {
             if (_methods != null)
                 _methods.Destroy();
+
+            foreach(Script sc in _scripts)
+            {
+                sc.Abort = true;
+            }
         }
 
 

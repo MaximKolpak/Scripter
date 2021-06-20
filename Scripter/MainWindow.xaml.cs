@@ -104,7 +104,7 @@ namespace Scripter
         }
 
         /// <summary>
-        /// Созраняет скрипты
+        /// Сохраняет скрипты
         /// </summary>
         private void SaveListLuaScripts()
         {
