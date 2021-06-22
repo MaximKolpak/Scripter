@@ -98,10 +98,13 @@
     </Compile>
     <Compile Include="Function\LuaDebug.cs" />
     <Compile Include="Function\LuaThreads.cs" />
+    <Compile Include="Function\MixFunc\ReMute.cs" />
+    <Compile Include="Function\MixFunc\ReName.cs" />
+    <Compile Include="Function\MixFunc\ReRquest.cs" />
+    <Compile Include="Function\MixFunc\ReSender.cs" />
     <Compile Include="MainClass\AutoRun.cs" />
     <Compile Include="MainClass\CheckConnect.cs" />
     <Compile Include="MainClass\ConsoleManager.cs" />
-    <Compile Include="MainClass\MethodCall.cs" />
     <Compile Include="MainClass\Script.cs" />
     <Compile Include="Settings\ScriptLua.cs" />
     <Compile Include="Settings\StateScript.cs" />

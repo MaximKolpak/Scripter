@@ -13,7 +13,7 @@ namespace Scripter.MainClass
         public Lua _lua; //Lua класс (скрипт)
         public Thread MainThread { get; set; } //Основной поток
         public string PathFile; //Путь к файлу
-        public bool FreeProcess; //Незажействован ли процессор
+        public bool FreeProcess = true; //Незажействован ли процессор
         public bool Abort;//Остановка процессора
 
         public Script(Action<Lua> RegFunction, string PathFile)
@@ -23,7 +23,10 @@ namespace Scripter.MainClass
             _lua.DebugHook += _lua_DebugHook;
             this.PathFile = PathFile;
             RegFunction(_lua);
+        }
 
+        public void StartScript()
+        {
             new Thread(DeclaredScripts).Start();
         }
 
@@ -41,6 +44,7 @@ namespace Scripter.MainClass
             try
             {
                 _lua.DoFile(PathFile);
+                FunctionCall("Main");
             }
             catch (Exception e)
             {
@@ -48,22 +52,17 @@ namespace Scripter.MainClass
             }
         }
 
-        public void MainFunction()
+        public void FunctionCall(string NameFunction, params object[] args)
         {
-            LuaFunction func = _lua["Main"] as LuaFunction;
-            if (func != null)
-            {
-                MainThread = new Thread( () =>
-                {
-                    FreeProcess = false;
-                    try
-                    {
-                        func.Call();
-                    }catch { }
-                    FreeProcess = true;
-                });
-                MainThread.Start();
-            }
+            LuaFunction func = _lua[NameFunction] as LuaFunction;
+            if (func == null)
+                return;
+
+                while (!FreeProcess)
+                    Thread.Sleep(100);
+                FreeProcess = false;
+                func.Call(args);
+                FreeProcess = true;
         }
     }
 }

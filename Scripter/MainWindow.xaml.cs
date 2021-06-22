@@ -207,7 +207,6 @@ namespace Scripter
             if (Connected)
             {
                 Connected = false;
-                mixerCore.DestroyFunction();
                 mixerCore = new Mixer(_settingsMixer.IpAdress, _settingsMixer.Port, _settingsMixer.Interval);
                 ShowStandardBalloon("Connection", "Потеря соединения с микшером", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Warning);
             }
@@ -300,7 +299,6 @@ namespace Scripter
         private void RealoadScript()
         {
             mixerCore.DestroyFunction();
-            mixerCore = new Mixer(_settingsMixer.IpAdress, _settingsMixer.Port, _settingsMixer.Interval);
             if (Connected)
                 new Thread(() => {
                     mixerCore.RunScripts(_scripts);
