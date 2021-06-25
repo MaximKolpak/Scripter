@@ -293,16 +293,15 @@ namespace Scripter
         }
 
         #endregion UIConrtoller
-
-
-
         private void RealoadScript()
         {
             mixerCore.DestroyFunction();
+            mixerCore = new Mixer(_settingsMixer.IpAdress, _settingsMixer.Port, _settingsMixer.Interval);
             if (Connected)
-                new Thread(() => {
-                    mixerCore.RunScripts(_scripts);
-                }).Start();
+            {
+                mixerCore.Connect();
+                mixerCore.RunScripts(_scripts);
+            }
         }
     }
 }

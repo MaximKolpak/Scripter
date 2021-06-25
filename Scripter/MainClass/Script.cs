@@ -54,15 +54,19 @@ namespace Scripter.MainClass
 
         public void FunctionCall(string NameFunction, params object[] args)
         {
-            LuaFunction func = _lua[NameFunction] as LuaFunction;
-            if (func == null)
-                return;
+            new Thread(() =>
+            {
+                LuaFunction func = _lua[NameFunction] as LuaFunction;
+                if (func == null)
+                    return;
 
                 while (!FreeProcess)
                     Thread.Sleep(100);
                 FreeProcess = false;
-                func.Call(args);
+                try { func.Call(args); } catch (Exception e) { Console.WriteLine("Sources: '{0}', Message: {1}", e.Source, e.Message); }
                 FreeProcess = true;
+                Thread.Sleep(100);
+            }).Start();
         }
     }
 }

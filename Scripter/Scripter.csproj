@@ -98,6 +98,7 @@
     </Compile>
     <Compile Include="Function\LuaDebug.cs" />
     <Compile Include="Function\LuaThreads.cs" />
+    <Compile Include="Function\MixFunc\ReColor.cs" />
     <Compile Include="Function\MixFunc\ReMute.cs" />
     <Compile Include="Function\MixFunc\ReName.cs" />
     <Compile Include="Function\MixFunc\ReRquest.cs" />

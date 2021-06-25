@@ -14,6 +14,8 @@ namespace Scripter.Function
         {
             Console.ForegroundColor = color;
             Console.WriteLine(message);
+            Console.ResetColor();
+
         }
 
         public void Log(string message)

@@ -56,7 +56,7 @@ namespace Scripter.MainClass
                     catch(Exception ex)
                     {
                         Connect = false;
-                        Console.WriteLine(ex.Message);
+                        Console.WriteLine("Подключение: " + ex.Message);
                         NoConnected?.Invoke(this, new EventArgs());
                     }
                     Thread.Sleep(_sleep);
